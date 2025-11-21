@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/nutrisearch-ontology#"
+     xml:base="http://www.semanticweb.org/nutrisearch-ontology"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    
+    <owl:Ontology rdf:about="http://www.semanticweb.org/nutrisearch-ontology">
+        <rdfs:label>Nutrition Ontology</rdfs:label>
+    </owl:Ontology>
+
+    <!-- CLASSES PRINCIPALES -->
+    <owl:Class rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Food">
+        <rdfs:label>Aliment</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Nutrient">
+        <rdfs:label>Nutriment</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://www.semanticweb.org/nutrisearch-ontology#HealthEffect">
+        <rdfs:label>Effet Santé</rdfs:label>
+    </owl:Class>
+
+    <!-- PROPRIÉTÉS -->
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/nutrisearch-ontology#hasNutrient">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Food"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Nutrient"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/nutrisearch-ontology#hasHealthEffect">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Food"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#HealthEffect"/>
+    </owl:ObjectProperty>
+
+    <!-- ALIMENTS -->
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Apple">
+        <rdfs:label>Pomme</rdfs:label>
+    </Food>
+
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Salmon">
+        <rdfs:label>Saumon</rdfs:label>
+    </Food>
+
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Spinach">
+        <rdfs:label>Épinard</rdfs:label>
+    </Food>
+
+    <!-- NUTRIMENTS -->
+    <Nutrient rdf:about="http://www.semanticweb.org/nutrisearch-ontology#VitaminC">
+        <rdfs:label>Vitamine C</rdfs:label>
+    </Nutrient>
+
+    <Nutrient rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Omega3">
+        <rdfs:label>Omega-3</rdfs:label>
+    </Nutrient>
+
+    <Nutrient rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Fiber">
+        <rdfs:label>Fibres</rdfs:label>
+    </Nutrient>
+
+    <!-- EFFETS SANTÉ -->
+    <HealthEffect rdf:about="http://www.semanticweb.org/nutrisearch-ontology#ImmuneSupport">
+        <rdfs:label>Soutien Immunitaire</rdfs:label>
+    </HealthEffect>
+
+    <HealthEffect rdf:about="http://www.semanticweb.org/nutrisearch-ontology#AntiInflammatory">
+        <rdfs:label>Anti-inflammatoire</rdfs:label>
+    </HealthEffect>
+
+    <!-- RELATIONS -->
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Apple">
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#VitaminC"/>
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Fiber"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#ImmuneSupport"/>
+    </Food>
+
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Salmon">
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Omega3"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#AntiInflammatory"/>
+    </Food>
+
+</rdf:RDF>

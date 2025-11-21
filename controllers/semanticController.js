@@ -1,5 +1,6 @@
 const ProtegeOntologyLoader = require('../ontology/protege-loader');
 const SPARQLQueries = require('../ontology/sparql-queries');
+const SemanticFood = require('../models/SemanticFood');
 
 // Initialiser les composants
 const ontologyLoader = new ProtegeOntologyLoader();
@@ -288,51 +289,8 @@ exports.getOntologyStats = async (req, res) => {
     try {
         await initializeOntology();
         
-        const foods = ontologyLoader.getFoodWithNutrients();
-        const quads = ontologyLoader.store.getQuads();
-        
-        // Compter les types d'entités
-        const entityCounts = {
-            foods: 0,
-            nutrients: 0,
-            healthEffects: 0,
-            classes: new Set()
-        };
-        
-        quads.forEach(quad => {
-            const subjectName = ontologyLoader.extractLocalName(quad.subject.value);
-            const objectName = ontologyLoader.extractLocalName(quad.object.value);
-            
-            if (quad.predicate.value.includes('hasNutrient')) {
-                entityCounts.nutrients++;
-            }
-            if (quad.predicate.value.includes('hasHealthEffect')) {
-                entityCounts.healthEffects++;
-            }
-            if (quad.object.value.includes('Food') && 
-                quad.predicate.value.includes('type')) {
-                entityCounts.foods++;
-            }
-            if (quad.object.value.includes('Class') && 
-                quad.predicate.value.includes('type')) {
-                entityCounts.classes.add(subjectName);
-            }
-        });
-        
-        const stats = {
-            totalTriples: quads.length,
-            inferredTriples: ontologyLoader.reasoner ? 
-                ontologyLoader.reasoner.inferredTriples.length : 0,
-            entities: {
-                foods: Object.keys(foods).length,
-                nutrients: entityCounts.nutrients,
-                healthEffects: entityCounts.healthEffects,
-                classes: entityCounts.classes.size
-            },
-            foodExamples: Object.keys(foods).slice(0, 10), // Premier 10 aliments
-            reasonerStatus: ontologyLoader.reasoner ? 'active' : 'inactive',
-            lastUpdated: new Date().toISOString()
-        };
+        // Utiliser la nouvelle méthode getOntologyStats du loader
+        const stats = ontologyLoader.getOntologyStats();
         
         res.json({
             status: 'success',
@@ -454,6 +412,187 @@ exports.formatSPARQLRecommendations = (sparqlResults, goals) => {
             matchLevel: data.score >= 3 ? 'high' : data.score >= 1 ? 'medium' : 'low'
         }))
         .sort((a, b) => b.score - a.score);
+};
+
+exports.createSemanticFood = async (req, res) => {
+    try {
+        const semanticFood = await SemanticFood.create(req.body);
+        
+        res.status(201).json({
+            status: 'success',
+            data: {
+                food: semanticFood
+            }
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: 'error',
+            message: error.message
+        });
+    }
+};
+
+exports.getSemanticFoods = async (req, res) => {
+    try {
+        const { nutrient, healthEffect, season, sustainability, goal } = req.query;
+        let query = {};
+        
+        // Filtres basés sur les relations sémantiques
+        if (nutrient) {
+            query['semanticRelations'] = {
+                $elemMatch: {
+                    relationType: 'hasNutrient',
+                    target: nutrient
+                }
+            };
+        }
+        
+        if (healthEffect) {
+            query['semanticRelations'] = {
+                $elemMatch: {
+                    relationType: 'hasHealthEffect', 
+                    target: healthEffect
+                }
+            };
+        }
+        
+        if (season) {
+            query['ecologicalContext.seasonality.season'] = season;
+        }
+        
+        if (sustainability) {
+            query['ecologicalContext.sustainabilityScore'] = { $gte: parseInt(sustainability) };
+        }
+        
+        let foods;
+        if (goal) {
+            // Utiliser la méthode de recherche par objectif de bien-être
+            foods = await SemanticFood.findByWellbeingGoal(goal);
+        } else {
+            foods = await SemanticFood.find(query);
+        }
+        
+        res.json({
+            status: 'success',
+            results: foods.length,
+            data: {
+                foods
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: error.message
+        });
+    }
+};
+
+exports.getSemanticFood = async (req, res) => {
+    try {
+        const food = await SemanticFood.findById(req.params.id);
+        
+        if (!food) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Aliment sémantique non trouvé'
+            });
+        }
+        
+        res.json({
+            status: 'success',
+            data: {
+                food
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: error.message
+        });
+    }
+};
+
+exports.getFoodRecommendations = async (req, res) => {
+    try {
+        const { goals, restrictions = [], preferences = [] } = req.body;
+        
+        let query = { status: 'active' };
+        
+        // Appliquer les restrictions
+        if (restrictions.length > 0) {
+            query['semanticRelations'] = {
+                $not: {
+                    $elemMatch: {
+                        target: { $in: restrictions }
+                    }
+                }
+            };
+        }
+        
+        const allFoods = await SemanticFood.find(query);
+        
+        // Calculer les scores pour chaque aliment
+        const recommendations = allFoods.map(food => {
+            const score = food.calculateWellbeingScore(goals);
+            
+            // Bonus pour les préférences
+            let preferenceBonus = 0;
+            preferences.forEach(preference => {
+                if (food.semanticTags.includes(preference)) {
+                    preferenceBonus += 5;
+                }
+            });
+            
+            return {
+                food: food.name,
+                score: score + preferenceBonus,
+                ontologicalClass: food.ontologicalClass,
+                nutrients: food.nutrients,
+                healthEffects: food.healthEffects,
+                sustainabilityScore: food.ecologicalContext.sustainabilityScore,
+                reasoning: food.semanticTags.filter(tag => 
+                    goals.some(goal => tag.includes(goal.toLowerCase()))
+                )
+            };
+        }).filter(rec => rec.score > 0)
+          .sort((a, b) => b.score - a.score);
+        
+        res.json({
+            status: 'success',
+            data: {
+                goals,
+                recommendations: recommendations.slice(0, 10), // Top 10
+                totalConsidered: allFoods.length
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: error.message
+        });
+    }
+};
+
+exports.getSustainableFoods = async (req, res) => {
+    try {
+        const { minScore = 7 } = req.query;
+        
+        const sustainableFoods = await SemanticFood.findSustainableFoods(parseInt(minScore));
+        
+        res.json({
+            status: 'success',
+            data: {
+                sustainableFoods,
+                averageScore: sustainableFoods.reduce((acc, food) => 
+                    acc + food.ecologicalContext.sustainabilityScore, 0) / sustainableFoods.length
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: error.message
+        });
+    }
 };
 
 module.exports = exports;

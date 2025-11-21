@@ -3,7 +3,7 @@ class SPARQLQueries {
         this.queries = {
             // Trouver tous les aliments
             getAllFoods: `
-                PREFIX nutrition: <http://www.semanticweb.org/nutrition-ontology#>
+                PREFIX nutrition: <http://www.semanticweb.org/nutrisearch-ontology#>
                 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                 
                 SELECT ?food ?type
@@ -15,7 +15,7 @@ class SPARQLQueries {
 
             // Trouver les aliments avec un nutriment spécifique
             getFoodsByNutrient: `
-                PREFIX nutrition: <http://www.semanticweb.org/nutrition-ontology#>
+                PREFIX nutrition: <http://www.semanticweb.org/nutrisearch-ontology#>
                 
                 SELECT ?food ?nutrient
                 WHERE {
@@ -26,7 +26,7 @@ class SPARQLQueries {
 
             // Trouver les aliments recommandés pour un effet santé
             getFoodsForHealthEffect: `
-                PREFIX nutrition: <http://www.semanticweb.org/nutrition-ontology#>
+                PREFIX nutrition: <http://www.semanticweb.org/nutrisearch-ontology#>
                 
                 SELECT ?food ?healthEffect
                 WHERE {
@@ -37,7 +37,7 @@ class SPARQLQueries {
 
             // Obtenir les propriétés complètes d'un aliment
             getFoodDetails: `
-                PREFIX nutrition: <http://www.semanticweb.org/nutrition-ontology#>
+                PREFIX nutrition: <http://www.semanticweb.org/nutrisearch-ontology#>
                 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                 
                 SELECT ?food ?nutrient ?healthEffect ?caloricDensity ?inflammatoryEffect
@@ -52,7 +52,7 @@ class SPARQLQueries {
 
             // Trouver des aliments anti-inflammatoires
             getAntiInflammatoryFoods: `
-                PREFIX nutrition: <http://www.semanticweb.org/nutrition-ontology#>
+                PREFIX nutrition: <http://www.semanticweb.org/nutrisearch-ontology#>
                 
                 SELECT ?food ?inflammatoryEffect
                 WHERE {
@@ -64,7 +64,7 @@ class SPARQLQueries {
 
             // Aliments riches en antioxydants
             getAntioxidantRichFoods: `
-                PREFIX nutrition: <http://www.semanticweb.org/nutrition-ontology#>
+                PREFIX nutrition: <http://www.semanticweb.org/nutrisearch-ontology#>
                 
                 SELECT ?food ?nutrient
                 WHERE {
@@ -91,7 +91,7 @@ class SPARQLQueries {
     // Requête dynamique pour les recommandations personnalisées
     createPersonalizedRecommendationQuery(goals, restrictions) {
         return `
-            PREFIX nutrition: <http://www.semanticweb.org/nutrition-ontology#>
+            PREFIX nutrition: <http://www.semanticweb.org/nutrisearch-ontology#>
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             
             SELECT ?food ?healthEffect ?inflammatoryEffect

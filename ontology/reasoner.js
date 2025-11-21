@@ -67,7 +67,7 @@ class OntologyReasoner {
                             if (complement && nutrients.has(complement)) {
                                 results.push({
                                     subject: namedNode(food),
-                                    predicate: namedNode('http://www.semanticweb.org/nutrition-ontology#hasSynergy'),
+                                    predicate: namedNode('http://www.semanticweb.org/nutrisearch-ontology#hasSynergy'),
                                     object: literal(`Enhanced absorption of ${nutrient} with ${complement}`)
                                 });
                             }
@@ -110,14 +110,14 @@ class OntologyReasoner {
                         if (antiInflammatoryCount >= 2) {
                             results.push({
                                 subject: namedNode(food),
-                                predicate: namedNode('http://www.semanticweb.org/nutrition-ontology#hasHealthEffect'),
-                                object: namedNode('http://www.semanticweb.org/nutrition-ontology#StrongAntiInflammatory')
+                                predicate: namedNode('http://www.semanticweb.org/nutrisearch-ontology#hasHealthEffect'),
+                                object: namedNode('http://www.semanticweb.org/nutrisearch-ontology#StrongAntiInflammatory')
                             });
                         } else if (antiInflammatoryCount === 1) {
                             results.push({
                                 subject: namedNode(food),
-                                predicate: namedNode('http://www.semanticweb.org/nutrition-ontology#hasHealthEffect'),
-                                object: namedNode('http://www.semanticweb.org/nutrition-ontology#MildAntiInflammatory')
+                                predicate: namedNode('http://www.semanticweb.org/nutrisearch-ontology#hasHealthEffect'),
+                                object: namedNode('http://www.semanticweb.org/nutrisearch-ontology#MildAntiInflammatory')
                             });
                         }
                     });
@@ -173,8 +173,8 @@ class OntologyReasoner {
                             
                             results.push({
                                 subject: namedNode(food),
-                                predicate: namedNode('http://www.semanticweb.org/nutrition-ontology#hasNutrientDensity'),
-                                object: namedNode(`http://www.semanticweb.org/nutrition-ontology#${classification}`)
+                                predicate: namedNode('http://www.semanticweb.org/nutrisearch-ontology#hasNutrientDensity'),
+                                object: namedNode(`http://www.semanticweb.org/nutrisearch-ontology#${classification}`)
                             });
                         }
                     });

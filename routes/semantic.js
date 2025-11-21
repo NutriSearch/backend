@@ -38,4 +38,10 @@ router.get('/classes', async (req, res) => {
     }
 });
 
+router.post('/semantic-foods', semanticController.createSemanticFood);
+router.get('/semantic-foods', semanticController.getSemanticFoods);
+router.get('/semantic-foods/sustainable', semanticController.getSustainableFoods);
+router.get('/semantic-foods/:id', semanticController.getSemanticFood);
+router.post('/recommendations/semantic', semanticController.getFoodRecommendations);
+
 module.exports = router;
