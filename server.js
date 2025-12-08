@@ -22,10 +22,7 @@ app.use(cookieParser());
 app.use(auth.limitRequests(100));
 
 // ===== MONGODB CONNECTION =====
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nutrisearch', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nutrisearch')
     .then(() => console.log(' MongoDB connecte'))
     .catch(err => console.error(' Erreur MongoDB:', err));
 

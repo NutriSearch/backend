@@ -37,36 +37,165 @@
     <!-- ALIMENTS -->
     <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Apple">
         <rdfs:label>Pomme</rdfs:label>
+        <caloricDensity>52</caloricDensity>
+        <protein>0.3</protein>
+        <carbohydrates>14</carbohydrates>
+        <fat>0.2</fat>
+        <fiber>2.4</fiber>
+        <sustainabilityScore>8.5</sustainabilityScore>
+        <season>automne</season>
+        <origin>France</origin>
+    </Food>
+
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Banana">
+        <rdfs:label>Banane</rdfs:label>
+        <caloricDensity>89</caloricDensity>
+        <protein>1.1</protein>
+        <carbohydrates>23</carbohydrates>
+        <fat>0.3</fat>
+        <fiber>2.6</fiber>
+        <sustainabilityScore>6.0</sustainabilityScore>
+        <season>toute l'année</season>
+        <origin>Équateur</origin>
+    </Food>
+
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Broccoli">
+        <rdfs:label>Brocoli</rdfs:label>
+        <caloricDensity>34</caloricDensity>
+        <protein>2.8</protein>
+        <carbohydrates>7</carbohydrates>
+        <fat>0.4</fat>
+        <fiber>2.6</fiber>
+        <sustainabilityScore>9.0</sustainabilityScore>
+        <season>hiver</season>
+        <origin>France</origin>
+    </Food>
+
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Carrot">
+        <rdfs:label>Carotte</rdfs:label>
+        <caloricDensity>41</caloricDensity>
+        <protein>0.9</protein>
+        <carbohydrates>10</carbohydrates>
+        <fat>0.2</fat>
+        <fiber>2.8</fiber>
+        <sustainabilityScore>8.0</sustainabilityScore>
+        <season>été</season>
+        <origin>France</origin>
     </Food>
 
     <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Salmon">
         <rdfs:label>Saumon</rdfs:label>
+        <caloricDensity>208</caloricDensity>
+        <protein>20</protein>
+        <carbohydrates>0</carbohydrates>
+        <fat>13</fat>
+        <fiber>0</fiber>
+        <sustainabilityScore>5.0</sustainabilityScore>
+        <season>toute l'année</season>
+        <origin>Norvège</origin>
+    </Food>
+
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Yogurt">
+        <rdfs:label>Yaourt Nature</rdfs:label>
+        <caloricDensity>59</caloricDensity>
+        <protein>3.5</protein>
+        <carbohydrates>4.7</carbohydrates>
+        <fat>3.3</fat>
+        <fiber>0</fiber>
+        <sustainabilityScore>5.5</sustainabilityScore>
+        <season>toute l'année</season>
+        <origin>France</origin>
     </Food>
 
     <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Spinach">
         <rdfs:label>Épinard</rdfs:label>
+        <caloricDensity>23</caloricDensity>
+        <protein>2.9</protein>
+        <carbohydrates>3.6</carbohydrates>
+        <fat>0.4</fat>
+        <fiber>2.2</fiber>
+        <sustainabilityScore>9.0</sustainabilityScore>
+        <season>printemps</season>
+        <origin>France</origin>
     </Food>
 
     <!-- NUTRIMENTS -->
     <Nutrient rdf:about="http://www.semanticweb.org/nutrisearch-ontology#VitaminC">
         <rdfs:label>Vitamine C</rdfs:label>
+        <dailyRecommendation>80</dailyRecommendation>
+        <unit>mg</unit>
     </Nutrient>
 
     <Nutrient rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Omega3">
         <rdfs:label>Omega-3</rdfs:label>
+        <dailyRecommendation>250</dailyRecommendation>
+        <unit>mg</unit>
     </Nutrient>
 
     <Nutrient rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Fiber">
-        <rdfs:label>Fibres</rdfs:label>
+        <rdfs:label>Fibres Alimentaires</rdfs:label>
+        <dailyRecommendation>25</dailyRecommendation>
+        <unit>g</unit>
+    </Nutrient>
+
+    <Nutrient rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Calcium">
+        <rdfs:label>Calcium</rdfs:label>
+        <dailyRecommendation>1000</dailyRecommendation>
+        <unit>mg</unit>
+    </Nutrient>
+
+    <Nutrient rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Protein">
+        <rdfs:label>Protéines</rdfs:label>
+        <dailyRecommendation>50</dailyRecommendation>
+        <unit>g</unit>
+    </Nutrient>
+
+    <Nutrient rdf:about="http://www.semanticweb.org/nutrisearch-ontology#BetaCarotene">
+        <rdfs:label>Bêta-carotène</rdfs:label>
+        <dailyRecommendation>800</dailyRecommendation>
+        <unit>µg</unit>
+    </Nutrient>
+
+    <Nutrient rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Iron">
+        <rdfs:label>Fer</rdfs:label>
+        <dailyRecommendation>14</dailyRecommendation>
+        <unit>mg</unit>
     </Nutrient>
 
     <!-- EFFETS SANTÉ -->
     <HealthEffect rdf:about="http://www.semanticweb.org/nutrisearch-ontology#ImmuneSupport">
         <rdfs:label>Soutien Immunitaire</rdfs:label>
+        <priority>haute</priority>
     </HealthEffect>
 
     <HealthEffect rdf:about="http://www.semanticweb.org/nutrisearch-ontology#AntiInflammatory">
         <rdfs:label>Anti-inflammatoire</rdfs:label>
+        <priority>haute</priority>
+    </HealthEffect>
+
+    <HealthEffect rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Digestive">
+        <rdfs:label>Améliore la digestion</rdfs:label>
+        <priority>moyenne</priority>
+    </HealthEffect>
+
+    <HealthEffect rdf:about="http://www.semanticweb.org/nutrisearch-ontology#HeartHealth">
+        <rdfs:label>Santé cardiovasculaire</rdfs:label>
+        <priority>haute</priority>
+    </HealthEffect>
+
+    <HealthEffect rdf:about="http://www.semanticweb.org/nutrisearch-ontology#BrainHealth">
+        <rdfs:label>Santé cognitive</rdfs:label>
+        <priority>haute</priority>
+    </HealthEffect>
+
+    <HealthEffect rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Antioxidant">
+        <rdfs:label>Antioxydant</rdfs:label>
+        <priority>moyenne</priority>
+    </HealthEffect>
+
+    <HealthEffect rdf:about="http://www.semanticweb.org/nutrisearch-ontology#BoneHealth">
+        <rdfs:label>Santé osseuse</rdfs:label>
+        <priority>moyenne</priority>
     </HealthEffect>
 
     <!-- RELATIONS -->
@@ -74,11 +203,54 @@
         <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#VitaminC"/>
         <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Fiber"/>
         <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#ImmuneSupport"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Digestive"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Antioxidant"/>
+    </Food>
+
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Banana">
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#VitaminC"/>
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Fiber"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Digestive"/>
+    </Food>
+
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Broccoli">
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#VitaminC"/>
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Fiber"/>
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Calcium"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#AntiInflammatory"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Antioxidant"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#ImmuneSupport"/>
+    </Food>
+
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Carrot">
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#BetaCarotene"/>
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Fiber"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Antioxidant"/>
     </Food>
 
     <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Salmon">
         <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Omega3"/>
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Protein"/>
         <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#AntiInflammatory"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#HeartHealth"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#BrainHealth"/>
+    </Food>
+
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Yogurt">
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Calcium"/>
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Protein"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Digestive"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#BoneHealth"/>
+    </Food>
+
+    <Food rdf:about="http://www.semanticweb.org/nutrisearch-ontology#Spinach">
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Iron"/>
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#VitaminC"/>
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Fiber"/>
+        <hasNutrient rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Calcium"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#AntiInflammatory"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#Antioxidant"/>
+        <hasHealthEffect rdf:resource="http://www.semanticweb.org/nutrisearch-ontology#BoneHealth"/>
     </Food>
 
 </rdf:RDF>

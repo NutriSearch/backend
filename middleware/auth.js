@@ -69,24 +69,33 @@ exports.limitRequests = (limit = 100) => {
     return (req, res, next) => {
         const ip = req.ip || req.connection.remoteAddress;
         const now = Date.now();
-        const windowStart = now - 60 * 60 * 1000;
+        const windowStart = now - 60 * 60 * 1000; // 1 hour window
 
+        // Clean up old entries
         for (const [key, value] of requests.entries()) {
             if (value.timestamp < windowStart) {
                 requests.delete(key);
             }
         }
 
-        const userRequests = requests.get(ip) || { count: 0, timestamp: now };
+        // Get or create request tracking for this IP
+        let userRequests = requests.get(ip);
+        
+        if (!userRequests || userRequests.timestamp < windowStart) {
+            // Reset if window has passed
+            userRequests = { count: 0, timestamp: now };
+        }
 
         if (userRequests.count >= limit) {
             return res.status(429).json({
                 status: 'error',
+                success: false,
                 message: 'Trop de requetes, veuillez reessayer plus tard'
             });
         }
 
         userRequests.count++;
+        userRequests.timestamp = now;
         requests.set(ip, userRequests);
         next();
     };

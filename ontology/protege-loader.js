@@ -270,14 +270,38 @@ class ProtegeOntologyLoader {
     }
 
     extractDataProperties(xmlData, extractedTriples) {
-        // Extraire les labels
-        const labelMatches = xmlData.match(/<rdfs:label[^>]*>([^<]+)<\/rdfs:label>/g) || [];
-        labelMatches.forEach(match => {
-            const value = match.match(/<rdfs:label[^>]*>([^<]+)<\/rdfs:label>/)[1];
-            const context = this.findSubjectContext(xmlData, match);
-            if (context) {
-                extractedTriples.push([context, 'http://www.w3.org/2000/01/rdf-schema#label', `"${value}"`]);
-            }
+        // Extract all data properties with a generic pattern
+        const dataProps = [
+            'rdfs:label', 'caloricDensity', 'protein', 'carbohydrates', 'fat', 'fiber',
+            'sustainabilityScore', 'season', 'origin', 'dailyRecommendation', 'unit', 
+            'priority', 'inflammatoryEffect', 'glycemicIndex'
+        ];
+
+        dataProps.forEach(prop => {
+            const tagName = prop.includes(':') ? prop : prop;
+            const pattern = new RegExp(`<${tagName}[^>]*>([^<]+)<\/${tagName}>`, 'g');
+            const matches = xmlData.match(pattern) || [];
+            
+            matches.forEach(match => {
+                const valueMatch = match.match(new RegExp(`<${tagName}[^>]*>([^<]+)<\/${tagName}>`));
+                if (valueMatch) {
+                    const value = valueMatch[1];
+                    const context = this.findSubjectContext(xmlData, match);
+                    if (context) {
+                        const propIRI = prop.includes(':') 
+                            ? (prop === 'rdfs:label' ? 'http://www.w3.org/2000/01/rdf-schema#label' : prop)
+                            : this.baseIRI + prop;
+                        
+                        // Determine if numeric
+                        const numValue = parseFloat(value);
+                        if (!isNaN(numValue) && value.trim() === numValue.toString()) {
+                            extractedTriples.push([context, propIRI, `"${value}"^^http://www.w3.org/2001/XMLSchema#decimal`]);
+                        } else {
+                            extractedTriples.push([context, propIRI, `"${value}"`]);
+                        }
+                    }
+                }
+            });
         });
     }
 

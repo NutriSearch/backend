@@ -11,7 +11,7 @@ const sanitizeUser = (userDoc) => {
     return safe;
 };
 
-const sendToken = (user, statusCode, res, rememberMe = false) => {
+const sendToken = (user, statusCode, res, rememberMe = false, message) => {
     const token = user.generateAuthToken();
 
     const cookieOptions = {
@@ -23,13 +23,16 @@ const sendToken = (user, statusCode, res, rememberMe = false) => {
 
     res.cookie('token', token, cookieOptions);
 
+    const safeUser = sanitizeUser(user);
+
     res.status(statusCode).json({
         status: 'success',
+        success: true,
+        message: message || undefined,
         token,
         expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-        data: {
-            user: sanitizeUser(user)
-        }
+        user: safeUser,
+        data: { user: safeUser }
     });
 };
 
@@ -40,6 +43,7 @@ exports.register = async (req, res) => {
         if (!fullName || !email || !password) {
             return res.status(400).json({
                 status: 'error',
+                success: false,
                 message: 'Nom complet, email et mot de passe sont requis'
             });
         }
@@ -48,6 +52,7 @@ exports.register = async (req, res) => {
         if (existingUser) {
             return res.status(400).json({
                 status: 'error',
+                success: false,
                 message: 'Un compte existe deja avec cet email'
             });
         }
@@ -60,10 +65,11 @@ exports.register = async (req, res) => {
             preferences: req.body.preferences || {}
         });
 
-        sendToken(newUser, 201, res, rememberMe);
+        sendToken(newUser, 201, res, rememberMe, 'Compte créé avec succès');
     } catch (error) {
         res.status(400).json({
             status: 'error',
+            success: false,
             message: error.message
         });
     }
@@ -76,6 +82,7 @@ exports.login = async (req, res) => {
         if (!email || !password) {
             return res.status(400).json({
                 status: 'error',
+                success: false,
                 message: 'Veuillez fournir un email et un mot de passe'
             });
         }
@@ -85,6 +92,7 @@ exports.login = async (req, res) => {
         if (!user || !(await user.comparePassword(password))) {
             return res.status(401).json({
                 status: 'error',
+                success: false,
                 message: 'Email ou mot de passe incorrect'
             });
         }
@@ -92,6 +100,7 @@ exports.login = async (req, res) => {
         if (!user.isActive) {
             return res.status(401).json({
                 status: 'error',
+                success: false,
                 message: 'Votre compte est desactive'
             });
         }
@@ -105,10 +114,11 @@ exports.login = async (req, res) => {
         });
         await user.save({ validateBeforeSave: false });
 
-        sendToken(user, 200, res, rememberMe);
+        sendToken(user, 200, res, rememberMe, 'Connexion réussie');
     } catch (error) {
         res.status(400).json({
             status: 'error',
+            success: false,
             message: error.message
         });
     }
@@ -123,6 +133,7 @@ exports.logout = (req, res) => {
 
     res.status(200).json({
         status: 'success',
+        success: true,
         message: 'Deconnecte avec succes'
     });
 };
@@ -132,10 +143,11 @@ exports.getMe = async (req, res) => {
         const user = await User.findById(req.user.id);
         res.status(200).json({
             status: 'success',
+            success: true,
             data: { user: sanitizeUser(user) }
         });
     } catch (error) {
-        res.status(400).json({ status: 'error', message: error.message });
+        res.status(400).json({ status: 'error', success: false, message: error.message });
     }
 };
 
@@ -171,6 +183,7 @@ exports.updatePassword = async (req, res) => {
         if (!currentPassword || !newPassword) {
             return res.status(400).json({
                 status: 'error',
+                success: false,
                 message: 'Les mots de passe actuel et nouveau sont requis'
             });
         }
@@ -180,6 +193,7 @@ exports.updatePassword = async (req, res) => {
         if (!(await user.comparePassword(currentPassword))) {
             return res.status(401).json({
                 status: 'error',
+                success: false,
                 message: 'Votre mot de passe actuel est incorrect'
             });
         }
@@ -187,9 +201,9 @@ exports.updatePassword = async (req, res) => {
         user.password = newPassword;
         await user.save();
 
-        sendToken(user, 200, res, rememberMe);
+        sendToken(user, 200, res, rememberMe, 'Mot de passe mis à jour');
     } catch (error) {
-        res.status(400).json({ status: 'error', message: error.message });
+        res.status(400).json({ status: 'error', success: false, message: error.message });
     }
 };
 
@@ -201,6 +215,7 @@ exports.forgotPassword = async (req, res) => {
         if (!user) {
             return res.status(404).json({
                 status: 'error',
+                success: false,
                 message: 'Aucun utilisateur trouve avec cet email'
             });
         }
@@ -210,11 +225,12 @@ exports.forgotPassword = async (req, res) => {
 
         res.status(200).json({
             status: 'success',
+            success: true,
             message: 'Token de reinitialisation genere',
             resetToken // expose uniquement en dev; en prod il faut envoyer par email
         });
     } catch (error) {
-        res.status(400).json({ status: 'error', message: error.message });
+        res.status(400).json({ status: 'error', success: false, message: error.message });
     }
 };
 
@@ -230,6 +246,7 @@ exports.resetPassword = async (req, res) => {
         if (!user) {
             return res.status(400).json({
                 status: 'error',
+                success: false,
                 message: 'Token invalide ou expire'
             });
         }
@@ -239,8 +256,8 @@ exports.resetPassword = async (req, res) => {
         user.passwordResetExpires = undefined;
         await user.save();
 
-        sendToken(user, 200, res);
+        sendToken(user, 200, res, false, 'Mot de passe reinitialise');
     } catch (error) {
-        res.status(400).json({ status: 'error', message: error.message });
+        res.status(400).json({ status: 'error', success: false, message: error.message });
     }
 };

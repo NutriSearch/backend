@@ -8,6 +8,11 @@ router.get('/food/:foodName', semanticController.getFoodDetails);
 router.post('/recommendations', semanticController.getHealthRecommendations);
 router.get('/stats', semanticController.getOntologyStats);
 
+// NEW: Ontology data as JSON (compatible with frontend ontologyData.js)
+const ontologyDataController = require('../controllers/ontologyDataController');
+router.get('/ontology-data', ontologyDataController.getOntologyData);
+router.get('/ontology-graph', ontologyDataController.getOntologyGraph);
+
 // Exploration de l'ontologie
 router.get('/classes', async (req, res) => {
     try {
