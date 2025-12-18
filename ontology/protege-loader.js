@@ -1,8 +1,10 @@
-const { Store, DataFactory } = require('n3');
+const { Store, DataFactory, Parser } = require('n3');
 const { namedNode, literal, defaultGraph } = DataFactory;
 const fs = require('fs');
 const path = require('path');
 const { Readable } = require('stream');
+const sparqlEngine = require('sparql-engine');
+const sparqljs = require('sparqljs');
 
 class ProtegeOntologyLoader {
     constructor() {
@@ -325,21 +327,170 @@ class ProtegeOntologyLoader {
 
         try {
             console.log('🔍 Exécution de la requête SPARQL...');
-            const results = await this.executeSimpleSPARQL(query);
+            const results = await this.executeSPARQL(query);
             console.log(`✅ ${results.results.bindings.length} résultats trouvés`);
             return results;
         } catch (error) {
             console.error('❌ Erreur SPARQL:', error.message);
-            return {
-                head: { vars: ['food'] },
-                results: { bindings: [] }
-            };
+            // Fallback to basic query if SPARQL engine fails
+            console.log('⚠️ Fallback à la requête simple');
+            return await this.executeSimpleSPARQL(query);
         }
+    }
+
+    async executeSPARQL(query) {
+        const quads = this.store.getQuads();
+        console.log(`🔍 Recherche dans ${quads.length} quads...`);
+
+        try {
+            // Parse the SPARQL query
+            const parser = new sparqljs.Parser();
+            const parsedQuery = parser.parse(query);
+            
+            console.log('📝 Requête SPARQL parsée avec succès');
+
+            // Handle SELECT queries
+            if (parsedQuery.type === 'query' && parsedQuery.queryType === 'SELECT') {
+                const bindings = this.executeSELECT(parsedQuery, quads);
+                
+                return {
+                    head: { vars: parsedQuery.variables.map(v => v.value || v.substring(1)) },
+                    results: { bindings }
+                };
+            }
+
+            // Fallback for other query types
+            throw new Error('Unsupported query type: ' + parsedQuery.queryType);
+        } catch (error) {
+            console.error('❌ Erreur lors du parsing/exécution SPARQL:', error.message);
+            throw error;
+        }
+    }
+
+    executeSELECT(parsedQuery, quads) {
+        const bindings = [];
+        const variables = parsedQuery.variables.map(v => v.value || v.substring(1));
+        const patterns = parsedQuery.where;
+
+        // Simple pattern matching for triple patterns
+        if (!patterns || patterns.length === 0) {
+            return bindings;
+        }
+
+        // Execute each pattern
+        const matchedQuads = this.matchPatterns(patterns, quads, variables);
+
+        // Format results
+        matchedQuads.forEach(match => {
+            const binding = {};
+            variables.forEach(varName => {
+                if (match[varName]) {
+                    binding[varName] = {
+                        type: match[varName].type || 'uri',
+                        value: match[varName].value
+                    };
+                }
+            });
+            if (Object.keys(binding).length > 0) {
+                bindings.push(binding);
+            }
+        });
+
+        return bindings;
+    }
+
+    matchPatterns(patterns, quads, variables) {
+        const matches = [];
+        
+        patterns.forEach(pattern => {
+            if (pattern.type === 'bgp' && pattern.triples) {
+                // Match basic graph patterns
+                this.matchTriplePatterns(pattern.triples, quads, matches, variables);
+            } else if (pattern.type === 'filter') {
+                // Handle FILTER clauses
+                // For now, we'll apply filters after matching
+            } else if (pattern.type === 'optional' && pattern.patterns) {
+                // Handle OPTIONAL patterns
+                this.matchPatterns(pattern.patterns, quads, matches, variables);
+            }
+        });
+
+        return matches;
+    }
+
+    matchTriplePatterns(triplePatterns, quads, matches, variables) {
+        const results = [{}];
+
+        triplePatterns.forEach(triplePattern => {
+            const newResults = [];
+
+            results.forEach(currentMatch => {
+                quads.forEach(quad => {
+                    const match = this.matchTriple(triplePattern, quad, currentMatch, variables);
+                    if (match) {
+                        newResults.push(match);
+                    }
+                });
+            });
+
+            results.length = 0;
+            results.push(...newResults);
+        });
+
+        matches.push(...results);
+    }
+
+    matchTriple(pattern, quad, currentMatch, variables) {
+        const match = { ...currentMatch };
+
+        // Match subject
+        if (pattern.subject.termType === 'Variable') {
+            const varName = pattern.subject.value;
+            if (match[varName] && match[varName].value !== quad.subject.value) {
+                return null;
+            }
+            match[varName] = {
+                value: quad.subject.value,
+                type: quad.subject.termType === 'NamedNode' ? 'uri' : 'literal'
+            };
+        } else if (pattern.subject.value !== quad.subject.value) {
+            return null;
+        }
+
+        // Match predicate
+        if (pattern.predicate.termType === 'Variable') {
+            const varName = pattern.predicate.value;
+            if (match[varName] && match[varName].value !== quad.predicate.value) {
+                return null;
+            }
+            match[varName] = {
+                value: quad.predicate.value,
+                type: 'uri'
+            };
+        } else if (pattern.predicate.value !== quad.predicate.value) {
+            return null;
+        }
+
+        // Match object
+        if (pattern.object.termType === 'Variable') {
+            const varName = pattern.object.value;
+            if (match[varName] && match[varName].value !== quad.object.value) {
+                return null;
+            }
+            match[varName] = {
+                value: quad.object.value,
+                type: quad.object.termType === 'NamedNode' ? 'uri' : 'literal'
+            };
+        } else if (pattern.object.value !== quad.object.value) {
+            return null;
+        }
+
+        return match;
     }
 
     async executeSimpleSPARQL(query) {
         const quads = this.store.getQuads();
-        console.log(`🔍 Recherche dans ${quads.length} quads...`);
+        console.log(`🔍 Recherche simple dans ${quads.length} quads...`);
 
         // REQUÊTE PAR DÉFAUT - tous les aliments
         if (query.includes('SELECT ?food WHERE') || query.includes('rdf:type') && query.includes('Food')) {

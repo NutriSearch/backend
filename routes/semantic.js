@@ -49,4 +49,22 @@ router.get('/semantic-foods/sustainable', semanticController.getSustainableFoods
 router.get('/semantic-foods/:id', semanticController.getSemanticFood);
 router.post('/recommendations/semantic', semanticController.getFoodRecommendations);
 
+// ===== FUSEKI & AI INTEGRATION ROUTES =====
+const fusekiAiController = require('../controllers/fusekiAiController');
+
+// Fuseki SPARQL endpoints
+router.get('/advanced-search', fusekiAiController.advancedSemanticSearch);
+router.get('/nutritional-profile/:foodName', fusekiAiController.getNutritionalProfile);
+router.get('/fuseki-stats', fusekiAiController.getFusekiStats);
+
+// AI-powered endpoints
+router.post('/nutrition-analysis', fusekiAiController.getNutritionAnalysis);
+router.post('/meal-plan', fusekiAiController.generateMealPlan);
+router.post('/ai-recommendations', fusekiAiController.getAIRecommendations);
+router.post('/nutrition-score', fusekiAiController.calculateNutritionScore);
+router.post('/chat', fusekiAiController.chatWithNutritionist);
+
+// Service status
+router.get('/integration-status', fusekiAiController.checkIntegrationStatus);
+
 module.exports = router;

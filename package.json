@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/NutriSearch/backend#readme",
   "dependencies": {
+    "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -33,7 +34,10 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.20.0",
     "n3": "^1.26.0",
+    "openai": "^6.14.0",
     "rdf-parse": "^4.0.0",
+    "sparql-engine": "^0.8.3",
+    "sparql-http-client": "^3.1.0",
     "sparqljs": "^3.7.3"
   }
 }
