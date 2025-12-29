@@ -18,8 +18,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Request limiting
-app.use(auth.limitRequests(100));
+// Request limiting - Increased from 100 to 500 requests/hour for better AI/chat support
+app.use(auth.limitRequests(500));
 
 // ===== MONGODB CONNECTION =====
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nutrisearch')
