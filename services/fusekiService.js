@@ -13,22 +13,51 @@ class FusekiService {
         this.timeout = 30000;
         this.retries = 3;
         this.isAvailable = false;
+        this.enabled = process.env.FUSEKI_ENABLED !== 'false'; // Can be disabled via env
+        this.checkedOnce = false; // Only show warning once
     }
 
     /**
      * Check if Fuseki server is available
      */
     async checkAvailability() {
+        if (!this.enabled) {
+            return false;
+        }
+
         try {
             const response = await axios.get(`${this.fusekiUrl}/$/version`, {
                 timeout: 5000
             });
             this.isAvailable = response.status === 200;
-            console.log(`✅ Fuseki server available at ${this.fusekiUrl}`);
+            
+            if (!this.checkedOnce) {
+                console.log(`✅ Fuseki server available at ${this.fusekiUrl}`);
+                this.checkedOnce = true;
+            }
             return true;
         } catch (error) {
-            console.warn(`⚠️ Fuseki server not available: ${error.message}`);
             this.isAvailable = false;
+            
+            // Only show warning once on first check
+            if (!this.checkedOnce) {
+                const errorMsg = error.code === 'ECONNREFUSED' 
+                    ? 'Connection refused - server not running'
+                    : error.message;
+                console.log(`\n${'='.repeat(60)}`);
+                console.log('⚠️  FUSEKI SERVER NOT AVAILABLE (OPTIONAL)');
+                console.log(`${'='.repeat(60)}`);
+                console.log(`Error: ${errorMsg}`);
+                console.log(`\nYour app works fine without Fuseki!`);
+                console.log(`Fuseki provides advanced SPARQL features (optional).`);
+                console.log(`\nTo start Fuseki:`);
+                console.log(`  1. Download: https://jena.apache.org/download/`);
+                console.log(`  2. Run: fuseki-server --mem /nutrisearch`);
+                console.log(`\nTo disable this message:`);
+                console.log(`  Add to .env: FUSEKI_ENABLED=false`);
+                console.log(`${'='.repeat(60)}\n`);
+                this.checkedOnce = true;
+            }
             return false;
         }
     }
@@ -109,7 +138,7 @@ class FusekiService {
         }
 
         try {
-            const response = await axios.post(
+            await axios.post(
                 this.updateEndpoint,
                 new URLSearchParams({
                     update: sparqlQuery

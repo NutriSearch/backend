@@ -239,7 +239,7 @@ class AIService {
             minerals: dailyIntake.minerals ? 80 : 50
         };
 
-        const overallScore = Object.values(score).reduce((a, b) => a + b) / Object.keys(score).length;
+        const overallScore = Object.values(score).reduce((a, b) => a + b, 0) / Object.keys(score).length;
 
         return {
             individual_scores: score,
@@ -304,7 +304,7 @@ class AIService {
      */
     _generateBasicMealPlan(userProfile) {
         return {
-            days: Array(7).fill(null).map((_, i) => ({
+            days: new Array(7).fill(null).map((_, i) => ({
                 day: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][i],
                 meals: [
                     { type: 'breakfast', name: 'Oatmeal with fruits', calories: 350 },
